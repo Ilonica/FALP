@@ -1,3 +1,4 @@
+% Задание 1
 % предикат max(+X, +Y, +U, -Z)
 % Z - максимальное из чисел X, Y и U.
 max(X, Y, U, X) :- X>Y, X>U, !.
@@ -78,3 +79,48 @@ remove_items_with_digit_sum([H|T], Sum, Result) :-
     ;   Result = [H|NewResult],
         remove_items_with_digit_sum(T, Sum, NewResult)
     ).
+
+
+% задание 2
+% предикат max_digit_up(+N, -Max)
+% Max - максимальная цифра числа N (рекурсия вверх).
+max_digit_up(0, 0).
+max_digit_up(N, Max) :- CurDigit is N mod 10, N1 is N // 10, max_digit_up(N1, CurMax), (CurDigit>CurMax -> Max is CurDigit; Max is CurMax).
+
+% предикат max_digit(+N, -Max)
+% Max - максимальная цифра числа N (рекурсия вниз).
+max_digit(0, Max, Max) :- !.
+max_digit(N, Max) :- CurMax is N mod 10, N1 is N // 10, max_digit(N1, CurMax, Max).
+max_digit(N1, CurMax, Max) :- CurDigit is N1 mod 10, N is N1 // 10, ((CurDigit > CurMax) -> NextMax is CurDigit; NextMax is CurMax), max_digit(N, NextMax, Max).
+
+% предикат sum_mul_3_up(+N, -Sum)
+% Sum - сумма цифр числа N, кратных 3 (рекурсия вверх).
+sum_mul_3_up(0, 0).
+sum_mul_3_up(N, Sum) :- CurDigit is N mod 10, N1 is N // 10, sum_mul_3_up(N1, CurSum), (CurDigit mod 3 =:= 0 -> Sum is CurSum + CurDigit; Sum is CurSum).
+
+% предикат sum_mul_3_down(+N, -Sum)
+% Sum - сумма цифр числа N, кратных 3 (рекурсия вниз).
+sum_mul_3_down(N, Sum) :- sum_mul_3_down(N, 0, Sum).
+sum_mul_3_down(0, CurSum, CurSum).
+sum_mul_3_down(N, CurSum, Sum) :- CurDigit is N mod 10, N1 is N // 10, (CurDigit mod 3 =:= 0 -> NextSum is CurSum + CurDigit; NextSum is CurSum),
+sum_mul_3_down(N1, NextSum, Sum).
+
+% предикат count_divs_up(+N, -Count)
+% Count - количество делителей числа N (рекурсия вверх).
+count_divs_up(N, 0, 1).
+count_divs_up(N, Count) :- Div is N, count_divs_up(N, CurCount, Div), (N mod Div =:= 0 -> Count is CurCount + 1; Count is CurCount).
+count_divs_up(N, Count, Div) :- NewDiv is Div - 1, count_divs_up(N, CurCount, NewDiv), (N mod NewDiv =:= 0 -> Count is CurCount + 1; Count is CurCount).
+
+% предикат count_divs_down(+N, -Count)
+% Count - количество делителей числа N (рекурсия вниз).
+count_divs_down(N, Count) :- count_divs_down(N, Count, 1, 1).
+count_divs_down(N, CurCount, N, CurCount).
+count_divs_down(N, Count, Div, CurCount) :- (N mod Div =:= 0 -> NextCount is CurCount + 1 ; NextCount is CurCount), NewDiv is Div + 1, count_divs_down(N, Count, NewDiv, NextCount).
+
+task1 :-
+    read_list(List),
+    write_list(List),
+    sum_list_down(List, Sum),
+    remove_items_with_digit_sum([123, 2, 3], 6, Result),
+    write(Result),
+    write(Sum).
