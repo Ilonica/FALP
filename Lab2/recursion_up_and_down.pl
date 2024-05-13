@@ -81,7 +81,7 @@ remove_items_with_digit_sum([H|T], Sum, Result) :-
     ).
 
 
-% задание 2
+% Задание 2
 % предикат max_digit_up(+N, -Max)
 % Max - максимальная цифра числа N (рекурсия вверх).
 max_digit_up(0, 0).
@@ -124,3 +124,44 @@ task1 :-
     remove_items_with_digit_sum([123, 2, 3], 6, Result),
     write(Result),
     write(Sum).
+
+
+% Задание 3
+% предикат min_el_ind(+List, -MinInd)
+% MinInd - индекс минимального элемента в списке List.
+min_el_ind([H|T], MinInd) :- min_el_ind([H|T], 0, H, MinInd, 0).
+min_el_ind([], _, _, CurMinInd, CurMinInd).
+min_el_ind([H|T], CurInd, CurMin, MinInd, CurMinInd) :-
+    (H =< CurMin -> (NextMin is H, NextMinInd is CurInd);
+    NextMin is CurMin, NextMinInd is CurMinInd),
+    NextInd is CurInd + 1,
+    min_el_ind(T, NextInd, NextMin, MinInd, NextMinInd).
+
+% предикат two_min_els(+List, -Min1, -Min2)
+% Min1 - минимальный элемент списка List, Min2 - второй по минимальности элемент списка List.
+two_min_els([A, B|T], Min1, Min2) :- T \== [], two_min_els(T, A, B, Min1, Min2).
+two_min_els([], CurMin1, CurMin2, CurMin1, CurMin2).
+two_min_els([H|T], CurMin1, CurMin2, Min1, Min2) :-
+    (H < CurMin1 ->
+    NextMin1 is H, NextMin2 is CurMin1;
+    (H < CurMin2 ->
+    NextMin1 is CurMin1, NextMin2 is H;
+    NextMin1 is CurMin1, NextMin2 is CurMin2)),
+    two_min_els(T, NextMin1, NextMin2, Min1, Min2).
+
+% предикат count_even_els(+List, -Count)
+% Count - количество четных элементов в списке List.
+count_even_els(List, Count) :- count_even_els(List, 0, Count).
+count_even_els([], Count, Count).
+count_even_els([H|T], CurCount, Count) :-
+    (H mod 2 =:= 0 ->
+    NextCount is CurCount + 1;
+    NextCount is CurCount),
+    count_even_els(T, NextCount, Count).
+
+task3 :-
+    read_list(List),
+    min_el_ind(List, Ind),
+    write(Ind),
+    two_min_els(List, Min1, Min2),
+    write(Min1, Min2).
